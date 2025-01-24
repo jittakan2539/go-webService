@@ -8,8 +8,8 @@ import (
 )
 
 type Course struct {
-	CourseId   int     `json: "id"`
-	CourseName string  `json: "name"`
+	Id   int     `json: "id"`
+	Name string  `json: "name"`
 	Price      float64 `json: "price"`
 	Instructor string  `json: "instructor"`
 }
