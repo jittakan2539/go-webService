@@ -19,19 +19,19 @@ var CourseList []Course
 func init() {
 	CourseJSON := `[
 		{
-			"id":1,
+			"id":101,
 			"name":"Python",
 			"price":2550,
 			"instructor":"Frederick"
 		},
 		{
-			"id":2,
+			"id":102,
 			"name":"SQL",
 			"price":3000,
 			"instructor":"Andrew"
 		},
 		{
-			"id":1,
+			"id":103,
 			"name":"JavaScript",
 			"price":1550,
 			"instructor":"Frederick"
@@ -41,6 +41,16 @@ func init() {
 	if err != nil {
 		log.Fatal(err)
 	}
+}
+
+func getNextId() int {
+	highestId := -1
+	for _, course := range CourseList {
+		if highestId < course.Id {
+			highestId = course.Id
+		}
+	}
+	return highestId + 1
 }
 
 func courseHandler(w http.ResponseWriter, r *http.Request) {
@@ -61,11 +71,19 @@ func courseHandler(w http.ResponseWriter, r *http.Request) {
 			w.WriteHeader((http.StatusBadRequest))
 			return
 		}
-		err = json.Unmarshal(Bodybyte, newCourse)
+		err = json.Unmarshal(Bodybyte, &newCourse)
 		if err != nil {
 			w.WriteHeader(http.StatusBadRequest)
 			return
 		}
+		//Create new id
+		if newCourse.Id != 0 {
+			w.WriteHeader(http.StatusBadRequest)
+			return
+		}
+		newCourse.Id = getNextId()
+
+
 		CourseList = append(CourseList, newCourse)
 		w.WriteHeader(http.StatusCreated)
 		
