@@ -2,6 +2,7 @@ package main
 
 import (
 	"encoding/json"
+	"io"
 	"log"
 	"net/http"
 )
@@ -44,9 +45,36 @@ func init() {
 
 func courseHandler(w http.ResponseWriter, r *http.Request) {
 	courseJSON, err := json.Marshal(CourseList)
+	switch r.Method {
+	case http.MethodGet:
+		if err != nil {
+			w.WriteHeader(http.StatusInternalServerError)
+			return
+		}
+		w.Header().Set("Content-Type", "application/json")
+		w.Write(courseJSON)
+	
+	case http.MethodPost:
+		var newCourse Course
+		Bodybyte, err := io.ReadAll(r.Body)
+		if err != nil {
+			w.WriteHeader((http.StatusBadRequest))
+			return
+		}
+		err = json.Unmarshal(Bodybyte, newCourse)
+		if err != nil {
+			w.WriteHeader(http.StatusBadRequest)
+			return
+		}
+		CourseList = append(CourseList, newCourse)
+		w.WriteHeader(http.StatusCreated)
+		
+	}
 	
 }
 
 func main() {
+	http.HandleFunc("/course", courseHandler)
+	http.ListenAndServe(":5000", nil)
 
 }
