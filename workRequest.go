@@ -86,7 +86,7 @@ func courseHandler(w http.ResponseWriter, r *http.Request) {
 
 		CourseList = append(CourseList, newCourse)
 		w.WriteHeader(http.StatusCreated)
-		
+		json.NewEncoder(w).Encode(newCourse)
 	}
 	
 }
