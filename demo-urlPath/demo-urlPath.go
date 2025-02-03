@@ -94,11 +94,22 @@ func courseHandler(w http.ResponseWriter, r *http.Request) {
             course.Instructor = updatedCourse.Instructor
         }
 
-		//-------------------------//
-
         CourseList[listItemIndex] = updatedCourse
         w.WriteHeader(http.StatusOK)
 		json.NewEncoder(w).Encode(CourseList)
+
+	case http.MethodDelete:
+		course, listItemIndex := findID(ID)
+		if listItemIndex == -1 {
+			http.Error(w, fmt.Sprintf("No course found with ID %d", ID), http.StatusNotFound)
+			return
+		}
+
+		CourseList = append(CourseList[:listItemIndex], CourseList[listItemIndex+1:]...)
+
+		w.WriteHeader(http.StatusOK)
+		fmt.Fprintf(w, "Course with ID %d deleted", course.Id)
+
     default:
         w.WriteHeader(http.StatusMethodNotAllowed)
     }
