@@ -81,14 +81,24 @@ func courseHandler(w http.ResponseWriter, r *http.Request) {
             return
         }
 
-        if updatedCourse.Id != ID {
-            w.WriteHeader(http.StatusBadRequest)
-            return
+        updatedCourse.Id = course.Id
+
+		//--------------------------//
+		if updatedCourse.Name != "" {
+            course.Name = updatedCourse.Name
         }
+		if updatedCourse.Price != 0 {
+            course.Price = updatedCourse.Price
+        }
+		if updatedCourse.Instructor != "" {
+            course.Instructor = updatedCourse.Instructor
+        }
+
+		//-------------------------//
 
         CourseList[listItemIndex] = updatedCourse
         w.WriteHeader(http.StatusOK)
-
+		json.NewEncoder(w).Encode(CourseList)
     default:
         w.WriteHeader(http.StatusMethodNotAllowed)
     }
